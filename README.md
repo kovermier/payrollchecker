@@ -40,7 +40,6 @@ npm run dev
 
 6. **Paste CSV Data:** Paste your timecard data in CSV format into the textarea and click "Process CSV".
 
-
 ## Features
 
 - Parses timecard data from CSV input.
@@ -49,7 +48,8 @@ npm run dev
 - Provides separate tabs for each agent.
 - Highlights logons, logoffs, and auxiliary reasons.
 - Calculates and displays durations.
-
+- **New:** Improved error handling for CSV parsing.
+- **New:** Enhanced user interface with `Combobox` for agent selection.
 
 ## Technologies Used
 
@@ -61,7 +61,6 @@ npm run dev
 - Papa Parse (for CSV parsing)
 - Lodash (for utility functions)
 
-
 ## Project Structure
 
 - **`src/app`:** Contains the main application logic and pages.
@@ -72,11 +71,9 @@ npm run dev
 - **`src/lib`:** Utility functions and helpers.
 - **`public`:** Static assets.
 
-
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
-
 
 ## License
 

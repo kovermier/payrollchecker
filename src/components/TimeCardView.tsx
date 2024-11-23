@@ -1,8 +1,9 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useState, useRef } from 'react';
 import { format, parseISO } from 'date-fns';
 import Papa from 'papaparse';
 import _ from 'lodash';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Combobox, ComboboxInput } from '@headlessui/react'
+import { v4 as uuidv4 } from 'uuid';
 
 interface TimeEntry {
   Time: string;
@@ -44,7 +45,9 @@ const TimecardView: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, { entries: {}, agents: [] });
   const [error, setError] = useState<string>('');
   const [csvInput, setCsvInput] = useState('');
-  
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null); 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const processCSV = (csvText: string) => {
     try {
       Papa.parse(csvText, {
@@ -153,8 +156,8 @@ const TimecardView: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {sortedDates.map(([date, entries]) => (
-              <tr key={date} className="border-t border-gray-700">
+            {sortedDates.map(([date, entries]) => ( 
+              <tr key={`${date}-${uuidv4()}`} className="border-t border-gray-700"> 
                 <td className="p-3 text-gray-400 font-medium">
                   {date !== 'unknown' ? format(parseISO(date), 'EEE MM/dd') : 'Unknown'}
                 </td>
@@ -197,23 +200,21 @@ const TimecardView: React.FC = () => {
       </div>
 
       {state.agents.length > 0 && (
-        <Tabs defaultValue={state.agents[0]} className="w-full">
-          <div className="overflow-x-auto pb-2">
-            <TabsList className="inline-flex min-w-fit">
-              {state.agents.map(agent => (
-                <TabsTrigger key={agent} value={agent}>
+        <div className="mb-4">
+          <Combobox value={selectedAgent} onChange={(e) => setSelectedAgent(e)}>
+            <ComboboxInput className="w-full border border-gray-700 bg-gray-800 text-gray-200 p-2 rounded" placeholder="Select Agent" ref={inputRef}/>
+            <Combobox.Options className="absolute mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
+              {state.agents.map((agent) => (
+                <Combobox.Option key={agent} value={agent}>
                   {agent}
-                </TabsTrigger>
+                </Combobox.Option>
               ))}
-            </TabsList>
-          </div>
-          
-          {state.agents.map(agent => (
-            <TabsContent key={agent} value={agent}>
-              {renderAgentEntries(state.entries[agent])}
-            </TabsContent>
-          ))}
-        </Tabs>
+            </Combobox.Options>
+          </Combobox>
+        </div>
+      )}
+      {selectedAgent && state.entries[selectedAgent] && (
+        renderAgentEntries(state.entries[selectedAgent])
       )}
     </div>
   );
